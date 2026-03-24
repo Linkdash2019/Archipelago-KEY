@@ -74,3 +74,5 @@ chestItems = [
     "Capamari Soundtrack", "King Dedede Soundtrack", "Meta Knight Soundtrack"#,
     #"Yin-Yarn Soundtrack", "Dream Land Soundtrack", "Staff Credits Soundtrack"
 ]
+
+combinedItems = nothingItem+doorItems+chestItems

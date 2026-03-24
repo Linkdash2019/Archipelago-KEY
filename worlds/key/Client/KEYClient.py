@@ -2,6 +2,7 @@ import asyncio
 import traceback
 from typing import TYPE_CHECKING, Any, Optional
 
+from .. import items
 from . import background
 from . import setupSaveFile
 import dolphin_memory_engine as dme
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     import kvui
 
 SAVED_ITEMS = []
+
+base_id = 1234
 
 CONNECTION_REFUSED_GAME_STATUS = (
     "Dolphin failed to connect. Please load a ROM for Kirby's Epic Yarn. Trying again in 5 seconds..."
@@ -156,11 +159,12 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     continue
                 if ctx.slot is not None:
                     # Do stuff, (Check locations, Give Rewards, Etc. dme)
-                    print(ctx.items_received)
-                    for item in ctx.items_received:
-                        logger.info(item)
-                        if item not in SAVED_ITEMS:
-                            SAVED_ITEMS.append(item)
+                    for thing in ctx.items_received:
+                        if thing not in SAVED_ITEMS:
+                            background.getItemToUnlock(ctx.item_names.lookup_in_game(thing.item, "Kirby's Epic Yarn"))
+                            SAVED_ITEMS.append(thing)
+
+
                 setupSaveFile.setup()
                 background.redirectBossDoors()
                 background.motifFix()
