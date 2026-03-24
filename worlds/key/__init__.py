@@ -14,7 +14,7 @@ def run_client(*args: str) -> None:
     :param *args: Variable length argument list passed to the client.
     """
     print("Running the Kirby Epic Yarn Client")
-    from .KEYClient import main
+    from .Client.KEYClient import main
 
     launch(main, name="KirbyEpicYarnClient", args=args)
 
