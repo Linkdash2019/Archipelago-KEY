@@ -157,17 +157,17 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     ctx.dolphin_status = CONNECTION_LOST_STATUS
                     dme.un_hook()
                     continue
-                if ctx.slot is not None:
-                    # Do stuff, (Check locations, Give Rewards, Etc. dme)
-                    for thing in ctx.items_received:
-                        if thing not in SAVED_ITEMS:
-                            background.getItemToUnlock(ctx.item_names.lookup_in_game(thing.item, "Kirby's Epic Yarn"))
-                            SAVED_ITEMS.append(thing)
+                if dme.read_byte(0x906A6F87) == 0: #check if saving
+                    if ctx.slot is not None:
+                        # Do stuff, (Check locations, Give Rewards, Etc. dme)
+                        for thing in ctx.items_received:
+                            if thing not in SAVED_ITEMS:
+                                background.getItemToUnlock(ctx.item_names.lookup_in_game(thing.item, "Kirby's Epic Yarn"))
+                                SAVED_ITEMS.append(thing)
 
-
-                setupSaveFile.setup()
-                background.redirectBossDoors()
-                background.motifFix()
+                    setupSaveFile.setup()
+                    background.redirectBossDoors()
+                    background.motifFix()
                 sleep_time = 0.1
             else:
                 logger.info("Attempting to connect to Dolphin...")
