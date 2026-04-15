@@ -1,4 +1,3 @@
-import settings
 import typing
 from .options import KirbyYarnOptions  # the options we defined earlier
 from .items import KirbyYarnItem, nothingItem, doorItems, chestItems  # data used below to add items to the World

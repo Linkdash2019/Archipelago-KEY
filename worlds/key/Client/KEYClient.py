@@ -8,7 +8,9 @@ from . import setupSaveFile
 import dolphin_memory_engine as dme
 
 import Utils
+from NetUtils import ClientStatus
 from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser, gui_enabled, logger, server_loop
+from ...shivers.Rules import completion_condition
 
 if TYPE_CHECKING:
     import kvui
@@ -157,17 +159,20 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     ctx.dolphin_status = CONNECTION_LOST_STATUS
                     dme.un_hook()
                     continue
-                if dme.read_byte(0x906A6F87) == 0: #check if saving
+                if dme.read_byte(0x906A6F87) == 0: # Check if saving
                     if ctx.slot is not None:
                         # Do stuff, (Check locations, Give Rewards, Etc. dme)
                         for thing in ctx.items_received:
-                            if thing not in SAVED_ITEMS:
-                                background.getItemToUnlock(ctx.item_names.lookup_in_game(thing.item, "Kirby's Epic Yarn"))
-                                SAVED_ITEMS.append(thing)
+                            if dme.read_byte(0x906A6F87) == 0:
+                                if thing not in SAVED_ITEMS:
+                                    background.getItemToUnlock(ctx.item_names.lookup_in_game(thing.item, "Kirby's Epic Yarn"))
+                                    SAVED_ITEMS.append(thing)
 
                     setupSaveFile.setup()
-                    background.redirectBossDoors()
+                    background.redirectBossDoors(SAVED_ITEMS)
                     background.motifFix()
+                    if ("Yin-Yarn" in SAVED_ITEMS) and (dme.read_byte(0x906A774B) == 0x03):
+                        await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 sleep_time = 0.1
             else:
                 logger.info("Attempting to connect to Dolphin...")
@@ -204,7 +209,6 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
             await ctx.disconnect()
             sleep_time = 5
             continue
-
 
 def main(*args: str) -> None:
     """

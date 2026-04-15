@@ -111,48 +111,49 @@ def unlockDoors(itemToUnlock):
 
     for item in items.doorItems:
         if itemToUnlock == item:
-            #These other doors will be redirected correctly when unlocked
-            if item == 'Patch Castle':
-                if not var.pcUnlock:
-                    var.pcUnlock = True
-                    return True
-            elif item == 'Fangora':
-                if not var.boss1Unlock:
-                    var.boss1Unlock = True
-                    return True
-            elif item == 'Hot Wings':
-                if not var.boss2Unlock:
-                    var.boss2Unlock = True
-                    return True
-            elif item == 'Squashini':
-                if not var.boss3Unlock:
-                    var.boss3Unlock = True
-                    return True
-            elif item == 'Capamari':
-                if not var.boss4Unlock:
-                    var.boss4Unlock = True
-                    return True
-            elif item == 'King Dedede':
-                if not var.boss5Unlock:
-                    var.boss5Unlock = True
-                    return True
-            elif item == 'Meta Knight':
-                if not var.boss6Unlock:
-                    var.boss6Unlock = True
-                    return True
-            #For Yin-Yarn give patch for dramatic effect
-            elif item == 'Yin-Yarn':
-                level = 0x906A9163
-                if dme.read_byte(level) == 0x00:
-                    dme.write_byte(level, 0x01)
-                    return True
+            if dme.read_byte(0x906A6F87) == 0:  # Check if saving
+                #These other doors will be redirected correctly when unlocked
+                if item == 'Patch Castle':
+                    if not var.pcUnlock:
+                        var.pcUnlock = True
+                        return True
+                elif item == 'Fangora':
+                    if not var.boss1Unlock:
+                        var.boss1Unlock = True
+                        return True
+                elif item == 'Hot Wings':
+                    if not var.boss2Unlock:
+                        var.boss2Unlock = True
+                        return True
+                elif item == 'Squashini':
+                    if not var.boss3Unlock:
+                        var.boss3Unlock = True
+                        return True
+                elif item == 'Capamari':
+                    if not var.boss4Unlock:
+                        var.boss4Unlock = True
+                        return True
+                elif item == 'King Dedede':
+                    if not var.boss5Unlock:
+                        var.boss5Unlock = True
+                        return True
+                elif item == 'Meta Knight':
+                    if not var.boss6Unlock:
+                        var.boss6Unlock = True
+                        return True
+                #For Yin-Yarn give patch for dramatic effect
+                elif item == 'Yin-Yarn':
+                    level = 0x906A9163
+                    if dme.read_byte(level) == 0x00:
+                        dme.write_byte(level, 0x01)
+                        return True
 
-            elif dme.read_byte(0x906A7067+(unlock_hops*level_offset)) == 0x01:
-                #And the normal levels will just unlock normally
-                if dme.read_byte(0x906A7067+(unlock_hops*level_offset)) == 0x01:
-                    dme.write_byte(0x906A7067+(unlock_hops*level_offset), 0x02)
-                    return True
-            return False
+                elif dme.read_byte(0x906A7067+(unlock_hops*level_offset)) == 0x01:
+                    #And the normal levels will just unlock normally
+                    if dme.read_byte(0x906A7067+(unlock_hops*level_offset)) == 0x01:
+                        dme.write_byte(0x906A7067+(unlock_hops*level_offset), 0x02)
+                        return True
+                return False
         unlock_hops += 1
 
 def unlockChests(item):
@@ -189,19 +190,20 @@ def motifFix():
         onlyDisk = False
         for stuff in items.chestItems:
             if item == stuff:
-                if tinyHops == 1 and not onlyDisk:
-                    dme.write_byte(0x906A80EF + (hops * 12), 0x01)
-                    break
-                if tinyHops == 2 and not onlyDisk:
-                    dme.write_byte(0x906A80EF + (hops * 12) + (12 * 125), 0x01)
-                    break
-                if tinyHops == 3 or onlyDisk:
-                    diskHops = 0
-                    for disk in var.diskOrder:
-                        if item == disk:
-                            dme.write_byte(0x906A8AC7 + (diskHops * 12), 0x01)
-                            break
-                        diskHops += 1   
+                if dme.read_byte(0x906A6F87) == 0:  # Check if saving
+                    if tinyHops == 1 and not onlyDisk:
+                        dme.write_byte(0x906A80EF + (hops * 12), 0x01)
+                        break
+                    if tinyHops == 2 and not onlyDisk:
+                        dme.write_byte(0x906A80EF + (hops * 12) + (12 * 125), 0x01)
+                        break
+                    if tinyHops == 3 or onlyDisk:
+                        diskHops = 0
+                        for disk in var.diskOrder:
+                            if item == disk:
+                                dme.write_byte(0x906A8AC7 + (diskHops * 12), 0x01)
+                                break
+                            diskHops += 1
             else:
                 tinyHops += 1
                 if tinyHops == 4:
@@ -210,7 +212,7 @@ def motifFix():
                     if hops >= 43:
                         onlyDisk = True         
 
-def redirectBossDoors():
+def redirectBossDoors(saved_items):
     # Patch Castle
     if var.pcUnlock: dme.write_bytes(0x906A7068, b"\x90\x6C\x3D\x10")
     else: dme.write_bytes(0x906A7068, b"\x00\x00\x00\x00") 
@@ -231,7 +233,11 @@ def redirectBossDoors():
     else: dme.write_bytes(0x906A7704, b"\x00\x00\x00\x00") 
     # Meta Knight
     if var.boss6Unlock: dme.write_bytes(0x906A7728, b"\x90\x6C\x46\x10")
-    else: dme.write_bytes(0x906A7728, b"\x00\x00\x00\x00") 
+    else: dme.write_bytes(0x906A7728, b"\x00\x00\x00\x00")
+    #Yin-Yarn
+    #if "Yin-Yarn" not in saved_items:
+    #    dme.write_byte(0x906A9163, 0x00)
+    #    dme.write_byte(0x906A774B, 0x00)
 
 def backgroundLoop(exitEvent):
     locationRadioButton = 'inLevel'
