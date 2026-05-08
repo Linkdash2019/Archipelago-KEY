@@ -10,7 +10,7 @@ chestL = []
 def setSelectedFile(fileNum):
     dme.write_byte(0x906A6C4F, fileNum)
 
-'''
+
 def checkDoors():
     #43 Normal Levels
     #7 Bosses
@@ -24,13 +24,11 @@ def checkDoors():
             #Check if door has a medal
             if dme.read_byte(0x906A7067+(hops*level_offset)+8) < 255:
                 if hops == 49:
-                    if var.isBeaten == False:
-                        gui.lastUnlockedLog.config(state='normal')
-                        gui.lastUnlockedLog.insert(tk.INSERT, f'Congratulations!\nYou have beaten Yin-Yarn!\n')
-                        gui.lastUnlockedLog.config(state='disabled')
-                        var.isBeaten = True
+                    print('Congratulations!\nYou have beaten Yin-Yarn!\n')
+                    var.isBeaten = True
                 else:
-                    getItemToUnlock(var.spoiler[list(var.doorLocations.keys())[hops]], list(var.doorLocations.keys())[hops])
+                    return True
+                    #Check Chest....
                     if (hops >= 43) and (hops < 49):
                         getItemToUnlock(var.spoiler[list(var.chestLocations.keys())[129+hops-43]], list(var.chestLocations.keys())[129+hops-43])
         hops += 1
@@ -90,7 +88,7 @@ def checkChests():
                 list(var.chestLocations.keys())[2+(hops*3)]
             )
         hops += 1
-'''
+
 
 def getItemToUnlock(item):
     newUnlock = False

@@ -3,6 +3,7 @@ import traceback
 from typing import TYPE_CHECKING, Any, Optional
 
 from .. import items
+from .. import locations
 from . import background
 from . import setupSaveFile
 import dolphin_memory_engine as dme
@@ -10,7 +11,6 @@ import dolphin_memory_engine as dme
 import Utils
 from NetUtils import ClientStatus
 from CommonClient import ClientCommandProcessor, CommonContext, get_base_parser, gui_enabled, logger, server_loop
-from ...shivers.Rules import completion_condition
 
 if TYPE_CHECKING:
     import kvui
@@ -162,6 +162,9 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                 if dme.read_byte(0x906A6F87) == 0: # Check if saving
                     if ctx.slot is not None:
                         # Do stuff, (Check locations, Give Rewards, Etc. dme)
+                        #Check locations
+                        await ctx.check_locations([1235])
+                        #Give rewards
                         for thing in ctx.items_received:
                             if dme.read_byte(0x906A6F87) == 0:
                                 if thing not in SAVED_ITEMS:

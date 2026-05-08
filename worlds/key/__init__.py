@@ -74,13 +74,13 @@ class KirbyYarnWorld(World):
         return KirbyYarnItem(item, ItemClassification.progression, self.item_name_to_id[item], self.player)
 
     def create_items(self) -> None:
-        for item in map(self.create_item, (nothingItem+doorItems+chestItems)):
+        for item in map(self.create_item, (doorItems+chestItems)):
             self.multiworld.itempool.append(item)
 
         # itempool and number of locations should match up.
         # If this is not the case we want to fill the itempool with junk.
         junk = 0  # calculate this based on player options
-        self.multiworld.itempool += [self.create_item("nothing") for _ in range(junk)]
+        self.multiworld.itempool += [self.create_item(nothingItem) for _ in range(junk)]
 
 components.append(
     Component(
