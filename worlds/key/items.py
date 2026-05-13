@@ -1,19 +1,22 @@
-from BaseClasses import Item
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
-class KirbyYarnItem(Item):
-    game = "Kirby's Epic Yarn"
+from BaseClasses import Item, ItemClassification
+
+if TYPE_CHECKING:
+    from .world import KirbyYarnWorld
 
 nothingItem = ['Nothing']
 
 doorItems = [
     'Patch Castle', #Quilty Square
-    'Fountain Gardens', 'Flower Fields',   'Rainbow Falls',  'Big-Bean Vine ', 'Mole Hole',       'Weird Woods',   #Grass Land
+    'Fountain Gardens', 'Flower Fields',   'Rainbow Falls',  'Big-Bean Vine', 'Mole Hole',       'Weird Woods',   #Grass Land
     'Pyramid Sands',    'Lava Landing',    'Cool Cave',      'Dino Jungle',    'Temper Temple',   'Dusk Dunes',    #Hot Land
     'Toy Tracks',       'Mushroom Run',    'Sweets Park',    'Melody Town',    'Cocoa Station',   'Dark Manor',    #Treat Land
     'Splash Beach',     'Blub-Blub Ocean', 'Secret Island',  'Deep-Dive Deep', 'Boom Boatyard',   'Fossil Reef',   #Water Land
     'Snowy Fields',     'Cozy Cabin',      'Mt. Slide',      'Frosty Wheel',   'Frigid Fjords',   'Evergreen Lift',#Snow Land
     'Future City',      'Tube Town',       'Mysterious UFO', 'Stellar Way',    'Moon Base',       'Outer Rings',   #Space Land
-    "Whispy's Forest",  'Tempest Towers',  'Cloud Palace',   'Castle Dedede' , 'Meta Melon Isle', 'Battleship Halberd',#Dream Land
+    "Whispy's Forest",  'Tempest Towers',  'Cloud Palace',   'Castle_Dedede' , 'Meta Melon Isle', 'Battleship Halberd',#Dream Land
     'Fangora', 'Hot Wings', 'Squashini', 'Capamari', 'King Dedede', 'Meta Knight', 'Yin-Yarn' #Bosses
 ]
 
@@ -76,3 +79,30 @@ chestItems = [
 ]
 
 combinedItems = nothingItem+doorItems+chestItems
+
+item_name_to_id = {name: id for
+                       id, name in enumerate(nothingItem+doorItems+chestItems, 1)}
+
+default_item_classification = {item: ItemClassification.progression for item in doorItems}
+default_item_classification |= {item: ItemClassification.deprioritized for item in (nothingItem+chestItems)}
+default_item_classification |= {ItemClassification.progression: "Yin-Yarn"}
+
+
+class KirbyYarnItem(Item):
+    game = "Kirby's Epic Yarn"
+
+def get_random_filler_item_name(world: KirbyYarnWorld):
+    return "Nothing"
+
+def create_item_with_correct_classification(world: KirbyYarnWorld, name: str) -> KirbyYarnItem:
+    classification = default_item_classification[name]
+    return KirbyYarnItem(name, classification, item_name_to_id[name], world.player)
+
+def create_all_items(world: KirbyYarnWorld) -> None:
+    for item in map(world.create_item, (doorItems + chestItems)):
+        world.multiworld.itempool.append(item)
+
+    # itempool and number of locations should match up.
+    # If this is not the case we want to fill the itempool with junk.
+    junk = 0  # calculate this based on player options
+    world.multiworld.itempool += [KirbyYarnWorld.create_item(world, "Nothing") for _ in range(junk)]

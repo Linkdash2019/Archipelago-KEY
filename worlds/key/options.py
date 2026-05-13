@@ -5,7 +5,7 @@ class ShuffleDoors(DefaultOnToggle):
     """Adds level doors and goals to the pool"""
     display_name = "Shuffle Doors"
 
-class ShuffleChests(Toggle):
+class ShuffleChests(DefaultOnToggle):
     """Adds chests, apartment items, and soundtracks to the pool"""
     display_name = "Shuffle Chests"
 

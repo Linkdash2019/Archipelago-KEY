@@ -3,8 +3,6 @@ from worlds.LauncherComponents import SuffixIdentifier, Component, Type, compone
 def run_client(*args: str) -> None:
     """
     Launch the Kirby Epic Yarn client.
-
-    :param *args: Variable length argument list passed to the client.
     """
     print("Running the Kirby Epic Yarn Client")
     from .Client.KEYClient import main
@@ -19,6 +17,7 @@ components.append(
         func=run_client,
         game_name="Kirby's Epic Yarn",
         component_type=Type.CLIENT,
+        supports_uri=False,
         #file_identifier=SuffixIdentifier(".apkey"),
     )
 )
