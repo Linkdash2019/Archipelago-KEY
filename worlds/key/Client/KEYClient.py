@@ -2,7 +2,7 @@ import asyncio
 import traceback
 from typing import TYPE_CHECKING, Any, Optional
 
-from .. import items
+from .. import world
 from .. import locations
 from . import background
 from . import setupSaveFile
@@ -131,6 +131,8 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
 
     :param ctx: Kirby's Epic Yarn client context.
     """
+    listObtained = False
+    locationList = {}
     logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     sleep_time = 0.0
     while not ctx.exit_event.is_set():
@@ -163,7 +165,19 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     if ctx.slot is not None:
                         # Do stuff, (Check locations, Give Rewards, Etc. dme)
                         #Check locations
-                        await ctx.check_locations([1235])
+                        if not listObtained:
+                            #Get location id's from server
+                            for eachLocation in locations.allLocations:
+                                lastFoundItem = "hasdkhfuildghsai"
+                                itemIndex = -1
+                                while lastFoundItem != eachLocation:
+                                    itemIndex += 1
+                                    lastFoundItem = ctx.location_names.lookup_in_game(itemIndex, "Kirby's Epic Yarn")
+                                locationList[lastFoundItem] = itemIndex
+                            listObtained = True
+
+                        await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [locationList["Start"]]}])
+
                         #Give rewards
                         for thing in ctx.items_received:
                             if dme.read_byte(0x906A6F87) == 0:
@@ -176,6 +190,7 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     background.motifFix()
                     if ("Yin-Yarn" in SAVED_ITEMS) and (dme.read_byte(0x906A774B) == 0x03):
                         await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+                        ctx.finished_game = True
                 sleep_time = 0.1
             else:
                 logger.info("Attempting to connect to Dolphin...")
