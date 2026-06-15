@@ -176,10 +176,15 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                             listObtained = True
 
                         checked_locations = ["Start"]
-                        background.checkDoors()
                         checked_locations_id = []
+                        for thing in locations.allLocations:
+                            if background.checkStuff(thing) == True:
+                                checked_locations.append(thing)
                         for item in checked_locations:
-                            checked_locations_id.append(locationList[item])
+                            try:
+                                checked_locations_id.append(locationList[item])
+                            except:
+                                print(item,"not in list or otherwise invalid")
                         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": checked_locations_id}])
 
                         #Give rewards

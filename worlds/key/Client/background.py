@@ -1,5 +1,3 @@
-import time
-import tkinter as tk
 import dolphin_memory_engine as dme
 from .. import items
 from .. import locations
@@ -16,9 +14,43 @@ def change_saved_location(world=0):
     string = f'A00{world}ROOMNONE'
     dme.write_bytes(0x906A700C, string.encode('ascii'))
 
+def checkStuff(thing:str):
+    if thing in locations.doorLocations:
+        return checkDoors(thing)
+    elif thing in locations.chestLocations:
+        return checkChests(thing)
+    else:
+        print('Location not in list')
+        return False
+
+def checkDoors(thing):
+    level_offset = 36
+
+    tempDoorLocations = locations.doorLocations
+    tempDoorLocations.append(tempDoorLocations.pop(7))
+    tempDoorLocations.append(tempDoorLocations.pop(13))
+    tempDoorLocations.append(tempDoorLocations.pop(19))
+    tempDoorLocations.append(tempDoorLocations.pop(25))
+    tempDoorLocations.append(tempDoorLocations.pop(31))
+    tempDoorLocations.append(tempDoorLocations.pop(37))
+    hops = tempDoorLocations.index(thing)
+
+    # Check door status
+    if dme.read_byte(0x906A7067 + (hops * level_offset)) == 3:
+        # Check if door has a medal
+        if dme.read_byte(0x906A7067 + (hops * level_offset) + 8) < 255:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def checkChests(thing):
+    return True
+
 #########################
 ##TODO: REWRITE OR REPLACE
-def checkDoors():
+def checkDoorsOld():
     #43 Normal Levels
     #7 Bosses
     hops = 0
@@ -40,7 +72,7 @@ def checkDoors():
                         getItemToUnlock(var.spoiler[list(var.chestLocations.keys())[129+hops-43]], list(var.chestLocations.keys())[129+hops-43])
         hops += 1
 
-def checkChests():
+def checkChestsOld():
     hops = 0
     offset = 24
     level_offset = 36
