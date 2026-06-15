@@ -2,7 +2,6 @@ import asyncio
 import traceback
 from typing import TYPE_CHECKING, Any, Optional
 
-from .. import world
 from .. import locations
 from . import background
 from . import setupSaveFile
@@ -176,7 +175,12 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                                 locationList[lastFoundItem] = itemIndex
                             listObtained = True
 
-                        await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [locationList["Start"]]}])
+                        checked_locations = ["Start"]
+                        background.checkDoors()
+                        checked_locations_id = []
+                        for item in checked_locations:
+                            checked_locations_id.append(locationList[item])
+                        await ctx.send_msgs([{"cmd": "LocationChecks", "locations": checked_locations_id}])
 
                         #Give rewards
                         for thing in ctx.items_received:

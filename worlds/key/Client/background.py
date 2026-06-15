@@ -10,7 +10,14 @@ chestL = []
 def setSelectedFile(fileNum):
     dme.write_byte(0x906A6C4F, fileNum)
 
+def change_saved_location(world=0):
+    #We craft a string because it's easier.
+    #The string then gets converted to bytes
+    string = f'A00{world}ROOMNONE'
+    dme.write_bytes(0x906A700C, string.encode('ascii'))
 
+#########################
+##TODO: REWRITE OR REPLACE
 def checkDoors():
     #43 Normal Levels
     #7 Bosses
@@ -88,7 +95,7 @@ def checkChests():
                 list(var.chestLocations.keys())[2+(hops*3)]
             )
         hops += 1
-
+#########################
 
 def getItemToUnlock(item):
     newUnlock = False
@@ -96,12 +103,6 @@ def getItemToUnlock(item):
         unlockDoors(item)
     elif item in items.chestItems:
         unlockChests(item)
-
-def change_saved_location(world=0):
-    #We craft a string because it's easier.
-    #The string then gets converted to bytes
-    string = f'A00{world}ROOMNONE'
-    dme.write_bytes(0x906A700C, string.encode('ascii'))
 
 def unlockDoors(itemToUnlock):
     level_offset = 36
@@ -236,26 +237,3 @@ def redirectBossDoors(saved_items):
     #if "Yin-Yarn" not in saved_items:
     #    dme.write_byte(0x906A9163, 0x00)
     #    dme.write_byte(0x906A774B, 0x00)
-
-def backgroundLoop(exitEvent):
-    locationRadioButton = 'inLevel'
-
-    while not exitEvent.is_set():
-        # When world map entered
-        if (dme.read_bytes(0x906A7010, 4) == b'ROOM') & (locationRadioButton == 'inLevel'):
-            locationRadioButton = 'onMap'
-            setSelectedFile(0x00)
-            if var.shuffleDoors:
-                redirectBossDoors()
-                #checkDoors()
-            if var.shuffleChests:
-                #checkChests()
-                motifFix()
-        # When level entered
-        elif (dme.read_bytes(0x906A7010, 4) != b'ROOM') & (locationRadioButton == 'onMap'):
-            locationRadioButton = 'inLevel'
-            setSelectedFile(0x00)
-        else:
-            time.sleep(1)
-            if var.shuffleDoors:
-                redirectBossDoors()
