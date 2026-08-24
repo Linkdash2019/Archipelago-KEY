@@ -131,6 +131,7 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
     :param ctx: Kirby's Epic Yarn client context.
     """
     listObtained = False
+    locationRadioButton = 'inLevel'
     locationList = {}
     logger.info("Starting Dolphin connector. Use /dolphin for status information.")
     sleep_time = 0.0
@@ -160,12 +161,15 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                     ctx.dolphin_status = CONNECTION_LOST_STATUS
                     dme.un_hook()
                     continue
-                if dme.read_byte(0x906A6F87) == 0: # Check if saving
-                    if ctx.slot is not None:
-                        # Do stuff, (Check locations, Give Rewards, Etc. dme)
-                        #Check locations
+
+                if ctx.slot is not None:
+                    # Do stuff, (Check locations, Give Rewards, Etc. dme)
+                    # When world map entered
+                    if (dme.read_bytes(0x906A7010, 4) == b'ROOM') & (locationRadioButton == 'inLevel'):
+                        locationRadioButton = 'onMap'
+                        # Check locations
                         if not listObtained:
-                            #Get location id's from server
+                            # Get location id's from server
                             for eachLocation in locations.allLocations:
                                 lastFoundItem = "hasdkhfuildghsai"
                                 itemIndex = -1
@@ -187,6 +191,11 @@ async def dolphin_sync_task(ctx: KEYContext) -> None:
                                 print(item,"not in list or otherwise invalid")
                         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": checked_locations_id}])
 
+                    # When level entered
+                    elif (dme.read_bytes(0x906A7010, 4) != b'ROOM') & (locationRadioButton == 'onMap'):
+                        locationRadioButton = 'inLevel'
+
+                    if dme.read_byte(0x906A6F87) == 0:  # Check if saving
                         #Give rewards
                         for thing in ctx.items_received:
                             if dme.read_byte(0x906A6F87) == 0:

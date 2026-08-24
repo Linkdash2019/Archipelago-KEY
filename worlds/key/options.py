@@ -6,7 +6,7 @@ class ShuffleDoors(DefaultOnToggle):
     display_name = "Shuffle Doors"
 
 class ShuffleChests(DefaultOnToggle):
-    """Adds chests, apartment items, and soundtracks to the pool"""
+    """Adds chest apartment items, and soundtracks to the pool"""
     display_name = "Shuffle Chests"
 
 @dataclass

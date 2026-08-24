@@ -11,7 +11,7 @@ class KirbyYarnWorld(World):
     web = web_world.KirbyYarnWebWorld()
     options_dataclass = KirbyYarnOptions.KirbyYarnOptions  # options the player can set
     options: KirbyYarnOptions.KirbyYarnOptions  # typing hints for option results
-    settings: typing.ClassVar[KirbyYarnOptions.KirbyYarnOptions]  # will be automatically assigned from type hint
+    #settings: typing.ClassVar[KirbyYarnOptions.KirbyYarnOptions]  # will be automatically assigned from type hint
     topology_present = True  # show path to required location checks in spoiler
 
     # The following two dicts are required for the generation to know which items exist.

@@ -20,7 +20,6 @@ def checkStuff(thing:str):
     elif thing in locations.chestLocations:
         return checkChests(thing)
     else:
-        print('Location not in list')
         return False
 
 def checkDoors(thing):
@@ -46,7 +45,41 @@ def checkDoors(thing):
         return False
 
 def checkChests(thing):
-    return True
+    offset = 24
+    level_offset = 36
+
+    tempChestLocations = locations.chestLocations
+    tempChestLocations.append(tempChestLocations.pop(21))
+    tempChestLocations.append(tempChestLocations.pop(39))
+    tempChestLocations.append(tempChestLocations.pop(57))
+    tempChestLocations.append(tempChestLocations.pop(75))
+    tempChestLocations.append(tempChestLocations.pop(93))
+    tempChestLocations.append(tempChestLocations.pop(111))
+
+    hops = 0
+    tempHops=0
+    for item in tempChestLocations:
+        if item == thing:
+            break
+        tempHops += 1
+        if tempHops > 3:
+            tempHops = 0
+            hops += 1
+
+    if '1' in thing:
+        if dme.read_byte(0x906A7067 + (hops * level_offset) + offset) in (1, 3, 5, 7):
+            return True
+    elif '2' in thing:
+        if dme.read_byte(0x906A7067 + (hops * level_offset) + offset) in (2, 3, 6, 7):
+            return True
+    elif '3' in thing:
+        if dme.read_byte(0x906A7067 + (hops * level_offset) + offset) in (4, 5, 6, 7):
+            return True
+    elif 'Disk' in thing:
+        pass
+    else:
+        print("Invalid chest",thing)
+    return False
 
 #########################
 ##TODO: REWRITE OR REPLACE
