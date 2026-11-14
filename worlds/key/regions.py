@@ -33,8 +33,6 @@ def connect_regions(world: KirbyYarnWorld):
     space_land = world.get_region("Space Land")
     dream_land = world.get_region("Dream Land")
 
-    world.origin_region_name = "Quilty Square"
-
     quilty_square.connect(grass_land, "Quilty Square to Grass Land")
     grass_land.connect(hot_land, "Grass Land to Hot Land")
     hot_land.connect(treat_land, "Hot Land to Treat Land")

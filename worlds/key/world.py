@@ -10,7 +10,6 @@ class KirbyYarnWorld(World):
     web = web_world.KirbyYarnWebWorld()
     options_dataclass = KirbyYarnOptions.KirbyYarnOptions  # options the player can set
     options: KirbyYarnOptions.KirbyYarnOptions  # typing hints for option results
-    #settings: typing.ClassVar[KirbyYarnOptions.KirbyYarnOptions]  # will be automatically assigned from type hint
     topology_present = True  # show path to required location checks in spoiler
 
     # The following two dicts are required for the generation to know which items exist.
@@ -19,15 +18,6 @@ class KirbyYarnWorld(World):
 
     # There is always one region that the generator starts from & assumes you can always go back to.
     origin_region_name = "Quilty Square"
-
-    # Items can be grouped using their names to allow easy checking if any item
-    # from that group has been collected. Group names can also be used for !hint
-    item_name_groups = {
-    }
-
-    def generate_early(self) -> None:
-        # read player options to world instance
-        pass
 
     def create_regions(self) -> None:
         regions.create_and_connect_regions(self)
