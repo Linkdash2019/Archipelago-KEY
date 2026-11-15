@@ -1,12 +1,22 @@
 import asyncio
-from CommonClient import CommonContext, get_base_parser, gui_enabled, server_loop
+from CommonClient import CommonContext, get_base_parser, gui_enabled, server_loop, ClientCommandProcessor
 from worlds.LauncherComponents import launch
+
+class KirbyYarnCommandProcessor(ClientCommandProcessor):
+    def __init__(self, ctx: CommonContext):
+        super().__init__(ctx)
+
+    def _cmd_dolphin(self) -> None:
+        """
+        Helpful hint on how this command works
+        """
+        print("Dolphin Command Test!")
 
 
 class KirbyYarnContext(CommonContext):
-    # Text Mode to use !hint and such with games that have no text entry
-    game = "Kirby's Epic Yarn"  # empty matches any game since 0.3.2
+    game = "Kirby's Epic Yarn"
     items_handling = 0b111  # receive all items for /received
+    command_processor = KirbyYarnCommandProcessor
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
@@ -23,15 +33,9 @@ class KirbyYarnContext(CommonContext):
         await super().disconnect(allow_autoreconnect)
 
     def make_gui(self) -> type["kvui.GameManager"]:
-        """
-        Initialize the GUI for The Wind Waker client.
-
-        :return: The client's GUI.
-        """
         ui = super().make_gui()
         ui.base_title = "Kirby's Epic Yarn Client for Archipelago"
         return ui
-
 
 async def main():
     ctx = KirbyYarnContext()
