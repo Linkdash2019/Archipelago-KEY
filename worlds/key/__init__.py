@@ -2,7 +2,7 @@ from .world import KirbyYarnWorld as KirbyYarnWorld
 from worlds.LauncherComponents import Component, Type, components, icon_paths, launch
 
 def startClient():
-    from .client.keyClient import client
+    from .keyClient import client
     launch(client, name="Kirby's Epic Yarn")
 
 

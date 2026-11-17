@@ -1,6 +1,9 @@
 import asyncio
 from CommonClient import CommonContext, get_base_parser, gui_enabled, server_loop, ClientCommandProcessor
+from Utils import async_start
 from worlds.LauncherComponents import launch
+
+from .locations import LOCATION_NAME_TO_ID
 
 class KirbyYarnCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx: CommonContext):
@@ -11,6 +14,23 @@ class KirbyYarnCommandProcessor(ClientCommandProcessor):
         Helpful hint on how this command works
         """
         print("Dolphin Command Test!")
+
+    def _cmd_check(self, check: str="") -> bool:
+        """
+        Simulate checking game location
+        """
+        if check:
+            self.output("Checking game location " + check)
+            checkID = LOCATION_NAME_TO_ID[check]
+            if checkID is None:
+                self.output("Game location " + check + " not found.")
+                return False
+            async_start( self.ctx.send_msgs([{"cmd": "LocationChecks", "locations": [checkID]}]))
+            return True
+        else:
+            self.output("Please specify a location to be checked")
+            self.output("(Example: /check 'Patch Castle Goal'")
+            return False
 
 
 class KirbyYarnContext(CommonContext):
